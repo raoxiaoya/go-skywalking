@@ -6,7 +6,6 @@
 package util
 
 import (
-	"context"
 	"io/ioutil"
 	"net/http"
 	"strconv"
@@ -17,7 +16,7 @@ import (
 	agentv3 "skywalking.apache.org/repo/goapi/collect/language/agent/v3"
 )
 
-func Get(tracer *go2sky.Tracer, ctx context.Context, link string) (response string, err error) {
+func Get(link string) (response string, err error) {
 	client := http.Client{Timeout: time.Second * 10}
 	var reqest *http.Request
 	reqest, err = http.NewRequest("GET", link, nil)
@@ -25,11 +24,13 @@ func Get(tracer *go2sky.Tracer, ctx context.Context, link string) (response stri
 		return
 	}
 
+	tracer = GetTracer()
 	// perr 的作用就是Tag信息
 	// operationName 就是调用名称，意思要明确
 	url := reqest.URL
 	operationName := url.Scheme + "://" + url.Host + url.Path
-	span, err := tracer.CreateExitSpan(ctx, operationName, url.Host, func(key, value string) error {
+	ctx, _ := GetGcm().GetContext()
+	span, err := tracer.CreateExitSpan(*ctx, operationName, url.Host, func(key, value string) error {
 		reqest.Header.Set(key, value)
 		return nil
 	})
@@ -55,7 +56,8 @@ func Get(tracer *go2sky.Tracer, ctx context.Context, link string) (response stri
 
 const componentIDGINHttpServer = 5006
 
-func Middleware(tracer *go2sky.Tracer) gin.HandlerFunc {
+func Middleware() gin.HandlerFunc {
+	tracer = GetTracer()
 	if tracer == nil {
 		return func(c *gin.Context) {
 			c.Next()
@@ -80,7 +82,8 @@ func Middleware(tracer *go2sky.Tracer) gin.HandlerFunc {
 		span.Log(time.Now(), "test log info")
 		span.Error(time.Now(), "test log error")
 
-		c.Request = c.Request.WithContext(ctx)
+		//c.Request = c.Request.WithContext(ctx)
+		GetGcm().SetContext(&ctx)
 
 		c.Next()
 

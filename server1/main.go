@@ -3,33 +3,23 @@ package main
 import (
 	"fmt"
 	"net/http"
-	"time"
 
-	"github.com/SkyAPM/go2sky"
-	"github.com/SkyAPM/go2sky/reporter"
 	"github.com/gin-gonic/gin"
 	"github.com/phprao/go-skywalking.git/util"
 )
 
-var tr *go2sky.Tracer
-
 func main() {
-	r := gin.New()
-	rp, err := reporter.NewGRPCReporter("192.168.2.44:11800", reporter.WithCheckInterval(time.Second))
-	if err != nil {
+	if util.StartTracer() != nil {
 		fmt.Println("create gosky reporter failed!")
-		return
 	}
-	defer rp.Close()
-
-	tr, err = go2sky.NewTracer("test-demo1", go2sky.WithReporter(rp))
-	r.Use(util.Middleware(tr))
+	r := gin.New()
+	r.Use(util.Middleware())
 	r.GET("/test", test)
-	r.Run(":7001")
+	_ = r.Run(":7001")
 }
 
 func test(c *gin.Context) {
-	util.Get(tr, c.Request.Context(), "http://127.0.0.1:7002/test")
+	util.Get("http://127.0.0.1:7002/test")
 
 	result := make(map[string]interface{})
 	result["code"] = 0
