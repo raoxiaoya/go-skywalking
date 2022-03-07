@@ -84,6 +84,7 @@ func Middleware() gin.HandlerFunc {
 
 		//c.Request = c.Request.WithContext(ctx)
 		GetGcm().SetContext(&ctx)
+		defer GetGcm().DelContext()
 
 		c.Next()
 
