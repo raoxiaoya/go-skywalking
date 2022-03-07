@@ -1,5 +1,7 @@
 go1.17
 
+golang接入skywalking，包括gin, gorm
+
 调用链条：`client --> server1 --> server2 --> server3`
 
 ```bash

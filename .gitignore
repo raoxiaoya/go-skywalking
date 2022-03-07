@@ -1,2 +1,5 @@
 .idea/
-main
+server1/main
+server2/main
+server3/main
+conf/app.yaml

@@ -17,5 +17,7 @@ require (
 	golang.org/x/sys v0.0.0-20220227234510-4e6760a101f9 // indirect
 	google.golang.org/genproto v0.0.0-20220228195345-15d65a4533f7 // indirect
 	gopkg.in/yaml.v2 v2.4.0 // indirect
+	gorm.io/driver/mysql v1.0.1
+    gorm.io/gorm v1.20.1
 	skywalking.apache.org/repo/goapi v0.0.0-20220228040118-f1aefbfd2a8c
 )
