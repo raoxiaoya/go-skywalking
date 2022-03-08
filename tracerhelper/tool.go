@@ -8,6 +8,7 @@ package tracerhelper
 import (
 	"io/ioutil"
 	"net/http"
+	"strconv"
 	"time"
 
 	"github.com/SkyAPM/go2sky"
@@ -42,10 +43,16 @@ func Get(link string) (response string, err error) {
 
 	resp, err := client.Do(reqest)
 	if err != nil {
-		return response, err
+		span.Error(time.Now(), err.Error())
+	} else {
+		span.Tag(go2sky.TagStatusCode, strconv.Itoa(resp.StatusCode))
 	}
 
 	span.End()
+
+	if err != nil {
+		return
+	}
 
 	defer resp.Body.Close()
 	body, err := ioutil.ReadAll(resp.Body)
