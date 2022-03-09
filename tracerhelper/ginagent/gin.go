@@ -32,6 +32,7 @@ func Middleware() gin.HandlerFunc {
 			c.Next()
 			return
 		}
+		// 组件id对应名称：https://github.com/apache/skywalking/blob/master/oap-server/server-starter/src/main/resources/component-libraries.yml
 		span.SetComponent(tracerhelper.ComponentIDGINHttpServer)
 		span.Tag(go2sky.TagHTTPMethod, c.Request.Method)
 		span.Tag(go2sky.TagURL, c.Request.Host+c.Request.URL.Path)
